@@ -13,6 +13,16 @@ hook_Add( "ACF_PreDamageEntity", "ACF_BuildmodeIntegration", function( entity, d
     if entOwnerBuild or attackerBuild then return false end
 end )
 
+local function preventExplosions( entity )
+    if not IsValid( entity ) then return end
+
+    local entOwner = entity:CPPIGetOwner()
+    local entOwnerBuild = entOwner:GetNWBool( "_Kyle_Buildmode", false )
+    if entOwnerBuild then return false end
+end
+hook_Add( "ACF_AmmoExplode", "ACF_BuildmodeIntegration_BuilderAmmo", preventExplosions )
+hook_Add( "ACF_FuelExplode", "ACF_BuildmodeIntegration_BuilderFuel", preventExplosions )
+
 hook_Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt, shellOwner, shell )
     if not IsValid( hitEnt and shellOwner and shell ) then return end
 
