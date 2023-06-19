@@ -1,7 +1,8 @@
-local hook_Add = hook.Add
 local IsValid = IsValid
 
-hook_Add( "ACF_PreDamageEntity", "ACF_BuildmodeIntegration", function( entity, dmgResult, dmgInfo )
+util.AddNetworkString( "ACF_BuildmodeNotif" )
+
+hook.Add( "ACF_PreDamageEntity", "ACF_BuildmodeIntegration", function( entity, _, dmgInfo )
     if not IsValid( entity ) then return end
 
     local entOwner = entity:CPPIGetOwner()
@@ -10,7 +11,15 @@ hook_Add( "ACF_PreDamageEntity", "ACF_BuildmodeIntegration", function( entity, d
 
     local entOwnerBuild = entOwner:GetNWBool( "_Kyle_Buildmode", false )
     local attackerBuild = attacker:GetNWBool( "_Kyle_Buildmode", false )
-    if entOwnerBuild or attackerBuild then return false end
+
+    if entOwnerBuild then return false end
+    if attackerBuild then
+        net.Start( "ACF_BuildmodeNotif" )
+        net.WriteBool( true )
+        net.Send( attacker )
+
+        return false
+    end
 end )
 
 local function preventExplosions( entity )
@@ -20,10 +29,10 @@ local function preventExplosions( entity )
     local entOwnerBuild = entOwner:GetNWBool( "_Kyle_Buildmode", false )
     if entOwnerBuild then return false end
 end
-hook_Add( "ACF_AmmoExplode", "ACF_BuildmodeIntegration_BuilderAmmo", preventExplosions )
-hook_Add( "ACF_FuelExplode", "ACF_BuildmodeIntegration_BuilderFuel", preventExplosions )
+hook.Add( "ACF_AmmoExplode", "ACF_BuildmodeIntegration_BuilderAmmo", preventExplosions )
+hook.Add( "ACF_FuelExplode", "ACF_BuildmodeIntegration_BuilderFuel", preventExplosions )
 
-hook_Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt, shellOwner, shell )
+hook.Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt, shellOwner, shell )
     if not IsValid( hitEnt and shellOwner and shell ) then return end
 
     local entOwner = hitEnt:CPPIGetOwner()
@@ -31,5 +40,13 @@ hook_Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt
 
     local entOwnerBuild = entOwner:GetNWBool( "_Kyle_Buildmode", false )
     local attackerBuild = shellOwner:GetNWBool( "_Kyle_Buildmode", false )
-    if entOwnerBuild or attackerBuild then return false end
+
+    if entOwnerBuild then return false end
+    if attackerBuild then
+        net.Start( "ACF_BuildmodeNotif" )
+        net.WriteBool( false )
+        net.Send( attacker )
+
+        return false
+    end
 end )
