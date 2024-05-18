@@ -47,7 +47,7 @@ hook.Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt
     if attackerBuild then
         net.Start( "ACF_BuildmodeNotif" )
         net.WriteBool( false )
-        net.Send( attacker )
+        net.Send( shellOwner )
 
         return false
     end
