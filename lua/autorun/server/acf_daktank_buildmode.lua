@@ -31,8 +31,8 @@ local function preventExplosions( entity )
     local entOwnerBuild = entOwner:GetNWBool( "_Kyle_Buildmode", false )
     if entOwnerBuild then return false end
 end
-hook.Add( "ACF_AmmoCanExplode", "ACF_BuildmodeIntegration_BuilderAmmo", preventExplosions )
-hook.Add( "ACF_FuelCanExplode", "ACF_BuildmodeIntegration_BuilderFuel", preventExplosions )
+hook.Add( "ACF_PreExplodeAmmo", "ACF_BuildmodeIntegration_BuilderAmmo", preventExplosions )
+hook.Add( "ACF_PreExplodeFuel", "ACF_BuildmodeIntegration_BuilderFuel", preventExplosions )
 
 hook.Add( "DakTankDamageCheck", "DakTank_BuildmodeIntegration", function( hitEnt, shellOwner, shell )
     if not IsValid( hitEnt ) or not IsValid( shellOwner ) or not IsValid( shell ) then return end
